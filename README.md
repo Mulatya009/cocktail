@@ -2,6 +2,8 @@
 
 This is a APP developed in (HTML5 CSS3 BOOTSRAP4) Frontend; Backend is done with JAVASCRIPT (objects and classes js programming)
 
+the project get the coctail data from an API (The Cocktail DB);
+
 #How it works#
 
 The app provides all the best cocktail drinks.
