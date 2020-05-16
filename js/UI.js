@@ -1,4 +1,42 @@
 class UI {
+
+    // display favorite cocktails from storage
+    displayFavorite(favorites){
+        const favTable = document.querySelector('#favorites tbody');
+
+        favorites.forEach(drink => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>
+                    <img src="${drink.image}" alt="${drink.name}" width=100>
+                </td>
+                <td>
+                    ${drink.name}
+                </td>
+                <td>
+                    <a href="#" data-toggle="modal" data-target="#recipe" data-id="${drink.id}" class="btn btn-success get-recipe">
+                    View
+                    </a>
+                </td>
+                <td>
+                    <a href="#" data-id="${drink.id}" class="btn btn-danger remove-recipe">
+                    Remove
+                    </a>
+                </td>
+            `;
+
+            favTable.appendChild(tr);
+        })
+
+    }
+
+    // remove fav
+    removeFavorite(favorite){
+        favorite.remove();
+    }
+
+
+
     //  display random cocktail
     displayRandomCocktail(random){
         const div = document.querySelector('#results-random');
@@ -35,7 +73,7 @@ class UI {
                 </div>
             </div>
 
-        `;
+        `; 
 
     }
     // display categories
@@ -82,7 +120,8 @@ class UI {
                     </div>  
                 </div>
             `;
-         })
+         });
+        this.isFavorite();    
     }
 
     // display drinks & ingredients
@@ -128,7 +167,8 @@ class UI {
                 </div>
             `;
 
-        })
+        });
+        this.isFavorite();
 
     }
 
@@ -201,4 +241,22 @@ class UI {
         form.reset();
     }
 
+    isFavorite() {
+        const drinks = cocktailDB.getFromDB();
+
+        drinks.forEach(drink => {
+            // get id using destructuring
+            let { id } = drink;
+
+            // select the favorites
+            let favDrink = document.querySelector(`[data-id="${id}"]`);
+
+            if (favDrink) {
+                favDrink.classList.add('is-favorite');
+                favDrink.textContent = '-';
+            }
+        })
+    }
+
 }
+

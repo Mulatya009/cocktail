@@ -1,6 +1,7 @@
 // instance of classes;
 const ui = new UI(),
-      cocktail = new CocktailAPI();
+      cocktail = new CocktailAPI(),
+      cocktailDB = new CocktailDB;
 
 
 
@@ -26,19 +27,58 @@ eventListeners();
 
 // functions
 function documentReady(){
+    // identify all favorites
+    ui.isFavorite();
+
     cocktail.getCategories()
     .then(categories => {
         const categoryList = categories.categories.drinks;
-        ui.displayCategories(categoryList);
+        const searchPage = document.querySelector('.search-category');
+        if(searchPage){
+            ui.displayCategories(categoryList);
+        }
     })
     .catch(error => console.log(error)); 
 
     cocktail.getCocktailRandom()
     .then(randomCocktail => {
+        const page = document.getElementById('results-random');
         const rand = randomCocktail.randomCocktail.drinks[0];
-        ui.displayRandomCocktail(rand);
+        if(page){
+            ui.displayRandomCocktail(rand);
+        }
+        
     }) 
-    .catch(error => console.log(error));   
+    .catch(error => console.log(error)); 
+    
+    const favoritePage = document.querySelector('#favorites');
+    if(favoritePage){
+        const myFavorite = cocktailDB.getFromDB();
+        ui.displayFavorite(myFavorite);
+
+        // when view/ delete are clicked
+
+        favoritePage.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            if(e.target.classList.contains('get-recipe')){
+                cocktail.getSIngleRecipe(e.target.dataset.id)
+                    .then(recipe => {
+                        // display single recipe
+                        ui.displaySingleRecipe(recipe.recipe.drinks[0]);
+                    })
+                    .catch(error => console.log(error));
+            }
+            if (e.target.classList.contains('remove-recipe')) {
+                // remove from dom
+                ui.removeFavorite(e.target.parentElement.parentElement);
+
+                // remove from ls
+                cocktailDB.removeFavorite(e.target.dataset.id);
+            }
+
+        })
+    }
 
 }
 
@@ -59,13 +99,29 @@ function resultsDelegation(e){
         if(e.target.classList.contains('is-favorite')){
             e.target.classList.remove('is-favorite');
             e.target.textContent = '+';
+
+            // remove from ls
+            cocktailDB.removeFavorite(e.target.dataset.id);
         }
         else{
             e.target.classList.add('is-favorite');
             e.target.textContent = '-';
         }
+
+        // get fav info
+        const cardInfo = e.target.parentElement.parentElement;
+
+        const favoriteInfo = {
+            id : e.target.dataset.id,
+            image : cardInfo.querySelector('.card-img-top').src,
+            name : cardInfo.querySelector('.card-title').textContent
+        }
+
+        // send to cocktailDB
+        cocktailDB.saveIntoDB(favoriteInfo);
+        // console.log(favoriteInfo)
     }
-}
+} 
 
 function getCocktails(e){
     e.preventDefault();
