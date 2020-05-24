@@ -1,7 +1,7 @@
 // instance of classes;
 const ui = new UI(),
       cocktail = new CocktailAPI(),
-      cocktailDB = new CocktailDB;
+      cocktailDB = new CocktailDB();
 
 
 
